@@ -4,6 +4,7 @@ local windowScale = 10
 
 local player = require("player")
 local collision = require("collision")
+local numberRenderer = require("numberrenderer")
 
 local greygeese = {}
 local enemies = 5
@@ -59,6 +60,7 @@ function love.load()
 
     bgMusic = love.audio.newSource("/audio/bg_music.mp3", "stream")
     hurtSfx = love.audio.newSource("/audio/hitHurt.wav", "static")
+    breadSfx = love.audio.newSource("/audio/pickupBread.wav", "static")
 end
 
 function love.update(dt)
@@ -87,6 +89,7 @@ function love.update(dt)
         ) then
             player.bread = player.bread + 1
             bread = nil
+            breadSfx:play()
         end
 
     world:update(dt)
@@ -118,6 +121,8 @@ function love.draw()
     love.graphics.draw(healthbarBaseSprite, 2, 2)
     love.graphics.draw(healthbarSprite, 2, 2, 0, player.health / 100, 1)
     
+    numberRenderer:RenderNumber(player.bread, 2, virtualHeight - 10, virtualWidth, virtualHeight)
+
     -- Rendering virtual resolution
     love.graphics.pop()
 end

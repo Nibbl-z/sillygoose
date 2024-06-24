@@ -15,12 +15,13 @@ function enemy:Init(world, index)
     self.shape = love.physics.newRectangleShape(4, 4)
     self.fixture = love.physics.newFixture(self.body, self.shape)
     self.fixture:setRestitution(0.1)
+    self.fixture:setDensity(0)
     self.fixture:setUserData("enemy"..tostring(index))
 end
 
 function enemy:Follow(playerX, playerY, dt)
-    local forceX
-    local forceY
+    local forceX = 0
+    local forceY = 0
 
     if self.body:getX() < playerX then
         forceX = self.speed
