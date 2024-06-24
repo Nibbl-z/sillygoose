@@ -27,6 +27,8 @@ function love.load()
     
     breadSprite = love.graphics.newImage("/img/bread.png")
     plrHurtSprite = love.graphics.newImage("/img/plr_hurt.png")
+
+    gameOverSprite = love.graphics.newImage("/img/game_over.png")
     
     bgSprite:setWrap("repeat", "repeat", "repeat")
     
@@ -173,6 +175,8 @@ function love.draw()
         love.graphics.setColor(1,0,0,0.5)
         love.graphics.rectangle("fill", 0, 0, virtualWidth, virtualHeight)
         love.graphics.setColor(1,1,1,1)
+
+        love.graphics.draw(gameOverSprite, 0,0)
     end
     
     -- Rendering virtual resolution
