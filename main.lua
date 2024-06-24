@@ -8,9 +8,12 @@ local collision = require("collision")
 local greygeese = {}
 local enemies = 5
 
+local bread
+
 local world = love.physics.newWorld(0, 0, true)
 
 function love.load()
+    math.randomseed(os.time())
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
     
@@ -20,6 +23,8 @@ function love.load()
     
     healthbarBaseSprite = love.graphics.newImage("/img/healthbar_background.png")
     healthbarSprite = love.graphics.newImage("/img/healthbar_bar.png")
+
+    breadSprite = love.graphics.newImage("/img/bread.png")
     
     bgSprite:setWrap("repeat", "repeat", "repeat")
     
@@ -69,8 +74,24 @@ function love.update(dt)
             goose:Damage(player, hurtSfx)
         end
     end
+    
+    if bread == nil then
+        bread = require("bread")
+        bread.x = math.random(4, 60)
+        bread.y = math.random(4, 60)
+    end
+
+    if collision:CheckCollision(
+            math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
+            math.floor(bread.x), math.floor(bread.y), 12, 12
+        ) then
+            player.bread = player.bread + 1
+            bread = nil
+        end
 
     world:update(dt)
+
+    
 
     if not bgMusic:isPlaying() then
         bgMusic:play()
@@ -84,6 +105,10 @@ function love.draw()
     
     love.graphics.setBackgroundColor(1,1,1)
     love.graphics.draw(bgSprite, 0,0,0,1,1)
+    
+    if bread ~= nil then
+        love.graphics.draw(breadSprite, bread.x, bread.y)
+    end
     love.graphics.draw(plrSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
     
     for _, goose in ipairs(greygeese) do

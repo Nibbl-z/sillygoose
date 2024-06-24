@@ -7,6 +7,7 @@ player.speed = 2
 
 player.health = 100
 player.direction = 1
+player.bread = 0
 
 function player:Init(world)
     player.body = love.physics.newBody(world, self.x, self.y, "dynamic")
