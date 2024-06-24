@@ -9,6 +9,9 @@ player.health = 100
 player.direction = 1
 player.bread = 0
 
+player.damageEffectTimer = love.timer.getTime()
+player.disableMovement = false
+
 function player:Init(world)
     player.body = love.physics.newBody(world, self.x, self.y, "dynamic")
     player.shape = love.physics.newRectangleShape(4, 4)
@@ -19,6 +22,7 @@ function player:Init(world)
 end
 
 function player:Movement(dt)
+    if self.disableMovement then return end
     for key, mult in pairs(movementDirections) do
         if love.keyboard.isDown(key) then
             self.body:applyForce(self.speed * mult[1], self.speed * mult[2])
@@ -34,6 +38,9 @@ end
 
 function player:TakeDamage(damage)
     self.health = self.health - damage
+    if self.health <= 0 then self.health = 0 end
+    
+    self.damageEffectTimer = love.timer.getTime() + 0.1
 end
 
 return player

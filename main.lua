@@ -24,8 +24,9 @@ function love.load()
     
     healthbarBaseSprite = love.graphics.newImage("/img/healthbar_background.png")
     healthbarSprite = love.graphics.newImage("/img/healthbar_bar.png")
-
+    
     breadSprite = love.graphics.newImage("/img/bread.png")
+    plrHurtSprite = love.graphics.newImage("/img/plr_hurt.png")
     
     bgSprite:setWrap("repeat", "repeat", "repeat")
     
@@ -148,8 +149,15 @@ function love.draw()
     if bread ~= nil then
         love.graphics.draw(breadSprite, bread.x, bread.y)
     end
-    love.graphics.draw(plrSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
     
+    if player.damageEffectTimer > love.timer.getTime() then
+        love.graphics.setColor(1,0,0,1)
+        love.graphics.draw(plrHurtSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+    else
+        love.graphics.draw(plrSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+    end
+    
+    love.graphics.setColor(1,1,1,1)
     for _, goose in ipairs(greygeese) do
         love.graphics.draw(enemySprite, math.floor(goose.body:getX()), math.floor(goose.body:getY()), 0, goose.direction, 1, 4, 4)
     end
@@ -159,6 +167,13 @@ function love.draw()
     
     love.graphics.draw(breadSprite, virtualWidth - 10, 2)
     numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, virtualWidth, virtualHeight, "righttoleft")
+
+    if player.health <= 0 then
+        player.disableMovement = true
+        love.graphics.setColor(1,0,0,0.5)
+        love.graphics.rectangle("fill", 0, 0, virtualWidth, virtualHeight)
+        love.graphics.setColor(1,1,1,1)
+    end
     
     -- Rendering virtual resolution
     love.graphics.pop()
