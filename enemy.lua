@@ -2,32 +2,47 @@ local enemy = {}
 
 enemy.x = 0
 enemy.y = 0
-enemy.speed = 20
+enemy.speed = 3
 enemy.direction = 1
 enemy.damage = 5
 
 local damageTimer = love.timer.getTime()
 
+enemy.__index = enemy
+
+function enemy:Init(world, index)
+    enemy.body = love.physics.newBody(world, self.x, self.y, "dynamic")
+    enemy.shape = love.physics.newRectangleShape(8, 8)
+    enemy.fixture = love.physics.newFixture(self.body, self.shape)
+    enemy.fixture:setRestitution(0.4)
+    enemy.fixture:setUserData("enemy"..tostring(index))
+end
+
 function enemy:Follow(playerX, playerY, dt)
+    local forceX
+    local forceY
+
     if self.x < playerX then
-        self.x = self.x + (self.speed * dt)
+        forceX = self.speed
 
         self.direction = -1
     end
     
     if self.x > playerX then
-        self.x = self.x - (self.speed * dt)
+        forceX = -self.speed
         
         self.direction = 1
     end
-
+    
     if self.y < playerY then
-        self.y = self.y + (self.speed * dt)
+        forceY = self.speed
     end
     
     if self.y > playerY then
-        self.y = self.y - (self.speed * dt)
+        forceY = -self.speed
     end
+
+    self.body:setLinearVelocity(forceX, forceY)
 end
 
 function enemy:Damage(player)

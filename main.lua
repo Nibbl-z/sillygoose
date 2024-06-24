@@ -3,8 +3,12 @@ local virtualHeight = 64
 local windowScale = 10
 
 local player = require("player")
-local enemy = require("enemy")
 local collision = require("collision")
+
+local greygeese = {}
+local enemies = 5
+
+local world = love.physics.newWorld(0, 0, true)
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -15,30 +19,50 @@ function love.load()
     bgSprite = love.graphics.newImage("bg.png")
 
     bgSprite:setWrap("repeat", "repeat", "repeat")
+    
+    player:Init(world)
+    
+    for i = 1, enemies do
+        local greygoose = setmetatable({}, require("enemy"))
+        table.insert(greygeese, greygoose)
+        
+        greygoose.x = math.random(0,64)
+        greygoose.y = math.random(0,64)
+
+        greygoose:Init(world, i)
+    end
 end
 
 function love.update(dt)
     player:Movement(dt)
-    enemy:Follow(player.x, player.y, dt)
+
+    for _, goose in ipairs(greygeese) do
+        goose:Follow(player.body:getX(), player.body:getY(), dt)
     
-    if collision:CheckCollision(
-        math.floor(player.x), math.floor(player.y), 8, 8,
-        math.floor(enemy.x), math.floor(enemy.y), 8, 8
-    ) then
-        enemy:Damage(player)
+        if collision:CheckCollision(
+            math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
+            math.floor(goose.body:getX()), math.floor(goose.body:getY()), 8, 8
+        ) then
+            goose:Damage(player)
+        end
     end
+
+    world:update(dt)
 end
 
 function love.draw()
     -- Virtual resolution
     love.graphics.push()
     love.graphics.scale(love.graphics.getHeight() / virtualWidth, love.graphics.getHeight() / virtualHeight)
-
+    
     love.graphics.setBackgroundColor(1,1,1)
     love.graphics.draw(bgSprite, 0,0,0,1,1)
-    love.graphics.draw(plrSprite, math.floor(player.x), math.floor(player.y), 0, player.direction, 1, 4, 4)
-
-    love.graphics.draw(enemySprite, math.floor(enemy.x), math.floor(enemy.y), 0, enemy.direction, 1, 4, 4)
+    love.graphics.draw(plrSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+    
+    for _, goose in ipairs(greygeese) do
+        love.graphics.draw(enemySprite, math.floor(goose.body:getX()), math.floor(goose.body:getY()), 0, goose.direction, 1, 4, 4)
+    end
+    
     love.graphics.print(tostring(player.health), 0, 0)
     -- Rendering virtual resolution
     love.graphics.pop()
