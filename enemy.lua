@@ -2,7 +2,7 @@ local enemy = {}
 
 enemy.x = 0
 enemy.y = 0
-enemy.speed = 3
+enemy.speed = 13
 enemy.direction = 1
 enemy.damage = 5
 
@@ -22,23 +22,23 @@ function enemy:Follow(playerX, playerY, dt)
     local forceX
     local forceY
 
-    if self.x < playerX then
+    if self.body:getX() < playerX then
         forceX = self.speed
 
         self.direction = -1
     end
     
-    if self.x > playerX then
+    if self.body:getX() > playerX then
         forceX = -self.speed
         
         self.direction = 1
     end
     
-    if self.y < playerY then
+    if self.body:getY() < playerY then
         forceY = self.speed
     end
     
-    if self.y > playerY then
+    if self.body:getY() > playerY then
         forceY = -self.speed
     end
 

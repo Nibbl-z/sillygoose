@@ -14,10 +14,13 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
     
-    plrSprite = love.graphics.newImage("plr.png")
-    enemySprite = love.graphics.newImage("greygoose.png")
-    bgSprite = love.graphics.newImage("bg.png")
-
+    plrSprite = love.graphics.newImage("/img/plr.png")
+    enemySprite = love.graphics.newImage("/img/greygoose.png")
+    bgSprite = love.graphics.newImage("/img/bg.png")
+    
+    healthbarBaseSprite = love.graphics.newImage("/img/healthbar_background.png")
+    healthbarSprite = love.graphics.newImage("/img/healthbar_bar.png")
+    
     bgSprite:setWrap("repeat", "repeat", "repeat")
     
     player:Init(world)
@@ -38,7 +41,7 @@ function love.load()
         {0,0,1,virtualHeight * 2},--left
         {virtualWidth,0,1,virtualHeight * 2}--right
     }
-
+    
     for index, border in ipairs(borders) do
         local Border = {}
 
@@ -80,7 +83,9 @@ function love.draw()
         love.graphics.draw(enemySprite, math.floor(goose.body:getX()), math.floor(goose.body:getY()), 0, goose.direction, 1, 4, 4)
     end
     
-    love.graphics.print(tostring(player.health), 0, 0)
+    love.graphics.draw(healthbarBaseSprite, 2, 2)
+    love.graphics.draw(healthbarSprite, 2, 2, 0, player.health / 100, 1)
+
     -- Rendering virtual resolution
     love.graphics.pop()
 end
