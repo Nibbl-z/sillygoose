@@ -13,7 +13,7 @@ local world = love.physics.newWorld(0, 0, true)
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
-
+    
     plrSprite = love.graphics.newImage("plr.png")
     enemySprite = love.graphics.newImage("greygoose.png")
     bgSprite = love.graphics.newImage("bg.png")
@@ -26,10 +26,27 @@ function love.load()
         local greygoose = setmetatable({}, require("enemy"))
         table.insert(greygeese, greygoose)
         
-        greygoose.x = math.random(0,64)
-        greygoose.y = math.random(0,64)
+        greygoose.x = math.random(0, 64)
+        greygoose.y = math.random(0, 64)
 
         greygoose:Init(world, i)
+    end
+
+    local borders = {
+        {0,0,virtualWidth * 2,1},--top
+        {0,virtualHeight,virtualWidth * 2,1},--bottom
+        {0,0,1,virtualHeight * 2},--left
+        {virtualWidth,0,1,virtualHeight * 2}--right
+    }
+
+    for index, border in ipairs(borders) do
+        local Border = {}
+
+        Border.body = love.physics.newBody(world, border[1], border[2], "static")
+        Border.shape = love.physics.newRectangleShape(border[3], border[4])
+        Border.fixture = love.physics.newFixture(Border.body, Border.shape)
+        Border.fixture:setRestitution(0)
+        Border.fixture:setUserData("border"..tostring(index))
     end
 end
 

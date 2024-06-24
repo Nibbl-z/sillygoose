@@ -11,11 +11,11 @@ local damageTimer = love.timer.getTime()
 enemy.__index = enemy
 
 function enemy:Init(world, index)
-    enemy.body = love.physics.newBody(world, self.x, self.y, "dynamic")
-    enemy.shape = love.physics.newRectangleShape(8, 8)
-    enemy.fixture = love.physics.newFixture(self.body, self.shape)
-    enemy.fixture:setRestitution(0.4)
-    enemy.fixture:setUserData("enemy"..tostring(index))
+    self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
+    self.shape = love.physics.newRectangleShape(4, 4)
+    self.fixture = love.physics.newFixture(self.body, self.shape)
+    self.fixture:setRestitution(0.1)
+    self.fixture:setUserData("enemy"..tostring(index))
 end
 
 function enemy:Follow(playerX, playerY, dt)
