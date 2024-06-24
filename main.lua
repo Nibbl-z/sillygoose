@@ -35,12 +35,23 @@ function love.load()
         local greygoose = setmetatable({}, require("enemy"))
         table.insert(greygeese, greygoose)
         
-        greygoose.x = math.random(0, 64)
-        greygoose.y = math.random(0, 64)
-
+        local function distance(x1, y1, x2, y2)
+            local dx = x1 - x2
+            local dy = y1 - y2
+            return math.sqrt(dx * dx + dy * dy)
+        end
+        
+        repeat
+            greygoose.x = math.random(4,60)
+            greygoose.y = math.random(4,60)
+    
+        until distance(player.body:getX(), player.body:getY(), greygoose.x, greygoose.y) > 30
+         
+        
+        greygoose.speed = math.random(1000, 1600) / 100
         greygoose:Init(world, i)
     end
-
+    
     local borders = {
         {0,0,virtualWidth * 2,1},--top
         {0,virtualHeight,virtualWidth * 2,1},--bottom
