@@ -10,12 +10,16 @@ local playerY = 32
 
 local facing = 1
 
+local enemy = require("enemy")
+
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
 
     plrSprite = love.graphics.newImage("plr.png")
+    enemySprite = love.graphics.newImage("greygoose.png")
     bgSprite = love.graphics.newImage("bg.png")
+
     bgSprite:setWrap("repeat", "repeat", "repeat")
 end
 
@@ -32,6 +36,8 @@ function love.update(dt)
             end
         end
     end
+
+    enemy:Follow(playerX, playerY, dt)
 end
 
 function love.draw()
@@ -42,6 +48,8 @@ function love.draw()
     love.graphics.setBackgroundColor(1,1,1)
     love.graphics.draw(bgSprite, 0,0,0,1,1)
     love.graphics.draw(plrSprite, math.floor(playerX), math.floor(playerY), 0, facing, 1, 4, 4)
+
+    love.graphics.draw(enemySprite, math.floor(enemy.enemyX), math.floor(enemy.enemyY), 0, enemy.direction, 1, 4, 4)
     
     -- Rendering virtual resolution
     love.graphics.pop()
