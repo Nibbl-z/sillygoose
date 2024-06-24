@@ -13,14 +13,23 @@ local sprites = {
     ["9"] = love.graphics.newImage("/img/numbers/9.png")
 }
 
-function module:RenderNumber(number, x, y, virtualWidth, virtualHeight)
+function module:RenderNumber(number, x, y, virtualWidth, virtualHeight, direction)
     number = tostring(number)
     
-    for i = 1, string.len(number) do
-        local digit = string.sub(number, i, i)
-        sprites[digit]:setFilter("nearest", "nearest")
-        love.graphics.draw(sprites[digit], x + ((i - 1) * 9), y)
+    if direction == "lefttoright" then
+        for i = 1, string.len(number) do
+            local digit = string.sub(number, i, i)
+            sprites[digit]:setFilter("nearest", "nearest")
+            love.graphics.draw(sprites[digit], x + ((i - 1) * 9), y)
+        end
+    elseif direction == "righttoleft" then
+        for i = 1, string.len(number) do
+            local digit = string.sub(number, i, i)
+            sprites[digit]:setFilter("nearest", "nearest")
+            love.graphics.draw(sprites[digit], x - (string.len(number) - 1) * 8 - 1 + ((i - 1) * 9), y)
+        end
     end
+    
 end
 
 return module

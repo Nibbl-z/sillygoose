@@ -121,8 +121,9 @@ function love.draw()
     love.graphics.draw(healthbarBaseSprite, 2, 2)
     love.graphics.draw(healthbarSprite, 2, 2, 0, player.health / 100, 1)
     
-    numberRenderer:RenderNumber(player.bread, 2, virtualHeight - 10, virtualWidth, virtualHeight)
-
+    love.graphics.draw(breadSprite, virtualWidth - 10, 2)
+    numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, virtualWidth, virtualHeight, "righttoleft")
+    
     -- Rendering virtual resolution
     love.graphics.pop()
 end
