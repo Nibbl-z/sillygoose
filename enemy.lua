@@ -45,13 +45,14 @@ function enemy:Follow(playerX, playerY, dt)
     self.body:setLinearVelocity(forceX, forceY)
 end
 
-function enemy:Damage(player)
+function enemy:Damage(player, hurtSfx)
     print(damageTimer)
 
     if damageTimer > love.timer.getTime() then return end
-
+    
     damageTimer = love.timer.getTime() + 0.5
     player:TakeDamage(self.damage)
+    hurtSfx:play()
 end
 
 return enemy

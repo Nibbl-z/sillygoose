@@ -51,6 +51,9 @@ function love.load()
         Border.fixture:setRestitution(0)
         Border.fixture:setUserData("border"..tostring(index))
     end
+
+    bgMusic = love.audio.newSource("/audio/bg_music.mp3", "stream")
+    hurtSfx = love.audio.newSource("/audio/hitHurt.wav", "static")
 end
 
 function love.update(dt)
@@ -63,11 +66,15 @@ function love.update(dt)
             math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
             math.floor(goose.body:getX()), math.floor(goose.body:getY()), 8, 8
         ) then
-            goose:Damage(player)
+            goose:Damage(player, hurtSfx)
         end
     end
 
     world:update(dt)
+
+    if not bgMusic:isPlaying() then
+        bgMusic:play()
+    end
 end
 
 function love.draw()
@@ -85,7 +92,7 @@ function love.draw()
     
     love.graphics.draw(healthbarBaseSprite, 2, 2)
     love.graphics.draw(healthbarSprite, 2, 2, 0, player.health / 100, 1)
-
+    
     -- Rendering virtual resolution
     love.graphics.pop()
 end
