@@ -8,11 +8,13 @@ local numberRenderer = require("numberrenderer")
 local shop = require("shop")
 
 local greygeese = {}
-local enemies = 0
+local enemies = 3
 
 local bread
 
 local world = love.physics.newWorld(0, 0, true)
+
+local paused = false
 
 local sprites = {
     Player = "plr.png",
@@ -25,10 +27,12 @@ local sprites = {
     GameOver = "game_over.png",
     RetryButton = "retry.png",
 
-    ShopStand = "shop_stand.png"
+    ShopStand = "shop_stand.png",
+    ShopMenu = "shop.png"
 }
 
 function Start()
+    paused = false
     player:ResetValues()
     
     for _, v in ipairs(greygeese) do
@@ -122,7 +126,9 @@ function love.update(dt)
             math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
             math.floor(goose.body:getX()), math.floor(goose.body:getY()), 8, 8
         ) then
-            goose:Damage(player, hurtSfx)
+            if not paused then
+                goose:Damage(player, hurtSfx)
+            end
         end
     end
     
@@ -151,7 +157,9 @@ function love.update(dt)
             breadSfx:play()
         end
     
-    world:update(dt)
+    if not paused then world:update(dt) end
+    
+    
 
     if not bgMusic:isPlaying() then
         bgMusic:play()
@@ -176,8 +184,18 @@ function love.update(dt)
         if collision:CheckCollision(math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
         math.floor(shop.x), math.floor(shop.y), 12, 12) then
             if love.mouse.isDown(1) then
-                shop:Purchase("health", player)
+                if shop.menuOpen == false then
+                    shop:OpenMenu()
+                    paused = true
+                end
             end
+        end
+    end
+    
+    if shop.menuOpen then
+        local returnValue = shop:HandleMenu(windowScale, player)
+        if returnValue == "closed" then
+            paused = false
         end
     end
 end
@@ -213,9 +231,14 @@ function love.draw()
     love.graphics.draw(sprites.HealthbarBase, 2, 2)
     love.graphics.draw(sprites.HealthbarBar, 2, 2, 0, player.health / 100, 1)
     
+    if shop.menuOpen == true then
+        love.graphics.draw(sprites.ShopMenu, 0, 0)
+    end
+
     love.graphics.draw(sprites.Bread, virtualWidth - 10, 2)
     numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, virtualWidth, virtualHeight, "righttoleft")
-
+    
+    
     if player.health <= 0 then
         player.disableMovement = true
         love.graphics.setColor(1,0,0,0.5)

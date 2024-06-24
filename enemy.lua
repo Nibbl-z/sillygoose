@@ -4,7 +4,7 @@ enemy.x = 0
 enemy.y = 0
 enemy.speed = 13
 enemy.direction = 1
-enemy.damage = 20
+enemy.damage = 5
 
 disableFollowTimer = love.timer.getTime() + 2
 local damageTimer = love.timer.getTime()
