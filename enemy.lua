@@ -29,7 +29,7 @@ function enemy:Follow(playerX, playerY, dt)
 
     if self.body:getX() < playerX then
         forceX = self.speed
-
+        
         self.direction = -1
     end
     
@@ -86,6 +86,12 @@ function enemy:Damage(player, hurtSfx)
     end
     
     self.body:applyForce(forceX, forceY)
+end
+
+function enemy:Destroy()
+    self.body:destroy()
+    self.body = nil
+    self = nil
 end
 
 return enemy

@@ -8,6 +8,7 @@
     ],
     "Lua.diagnostics.disable": [
         "lowercase-global",
-        "param-type-mismatch"
+        "param-type-mismatch",
+        "assign-type-mismatch"
     ]
 }

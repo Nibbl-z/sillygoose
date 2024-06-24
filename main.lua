@@ -13,26 +13,27 @@ local bread
 
 local world = love.physics.newWorld(0, 0, true)
 
-function love.load()
-    math.randomseed(os.time())
-    love.graphics.setDefaultFilter('nearest', 'nearest')
-    love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
-    
-    plrSprite = love.graphics.newImage("/img/plr.png")
-    enemySprite = love.graphics.newImage("/img/greygoose.png")
-    bgSprite = love.graphics.newImage("/img/bg.png")
-    
-    healthbarBaseSprite = love.graphics.newImage("/img/healthbar_background.png")
-    healthbarSprite = love.graphics.newImage("/img/healthbar_bar.png")
-    
-    breadSprite = love.graphics.newImage("/img/bread.png")
-    plrHurtSprite = love.graphics.newImage("/img/plr_hurt.png")
+local sprites = {
+    Player = "plr.png",
+    PlayerHurt = "plr_hurt.png",
+    Enemy = "greygoose.png",
+    Background = "bg.png",
+    HealthbarBase = "healthbar_background.png",
+    HealthbarBar = "healthbar_bar.png",
+    Bread = "bread.png",
+    GameOver = "game_over.png",
+    RetryButton = "retry.png"
+}
 
-    gameOverSprite = love.graphics.newImage("/img/game_over.png")
+function Start()
+    player:ResetValues()
     
-    bgSprite:setWrap("repeat", "repeat", "repeat")
-    
-    player:Init(world)
+    for _, v in ipairs(greygeese) do
+        v:Destroy()
+        v = nil
+    end
+
+    greygeese = {}
     
     for i = 1, enemies do
         local greygoose = setmetatable({}, require("enemy"))
@@ -67,7 +68,21 @@ function love.load()
         greygoose.speed = math.random(1000, 1600) / 100
         greygoose:Init(world, i)
     end
+
+    bgMusic:stop()
+end
+
+function love.load()
+    math.randomseed(os.time())
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+    love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
     
+    for name, sprite in pairs(sprites) do
+        sprites[name] = love.graphics.newImage("/img/"..sprite)
+    end
+    
+    sprites.Background:setWrap("repeat", "repeat", "repeat")
+
     local borders = {
         {0,0,virtualWidth * 2,1},--top
         {0,virtualHeight,virtualWidth * 2,1},--bottom
@@ -90,6 +105,8 @@ function love.load()
     bgMusic = love.audio.newSource("/audio/bg_music.mp3", "stream")
     hurtSfx = love.audio.newSource("/audio/hitHurt.wav", "static")
     breadSfx = love.audio.newSource("/audio/pickupBread.wav", "static")
+    player:Init(world)
+    Start()
 end
 
 function love.update(dt)
@@ -130,13 +147,22 @@ function love.update(dt)
             bread = nil
             breadSfx:play()
         end
-
-    world:update(dt)
-
     
+    world:update(dt)
 
     if not bgMusic:isPlaying() then
         bgMusic:play()
+    end
+
+    if player.health <= 0 then
+        local mouseX, mouseY = love.mouse.getPosition()
+
+        if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, 16, 51, 31, 11) then
+            if love.mouse.isDown(1) then
+                print("retry")
+                Start()
+            end
+        end
     end
 end
 
@@ -146,28 +172,28 @@ function love.draw()
     love.graphics.scale(love.graphics.getHeight() / virtualWidth, love.graphics.getHeight() / virtualHeight)
     
     love.graphics.setBackgroundColor(1,1,1)
-    love.graphics.draw(bgSprite, 0,0,0,1,1)
+    love.graphics.draw(sprites.Background, 0,0,0,1,1)
     
     if bread ~= nil then
-        love.graphics.draw(breadSprite, bread.x, bread.y)
+        love.graphics.draw(sprites.Bread, bread.x, bread.y)
     end
     
     if player.damageEffectTimer > love.timer.getTime() then
         love.graphics.setColor(1,0,0,1)
-        love.graphics.draw(plrHurtSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+        love.graphics.draw(sprites.PlayerHurt, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
     else
-        love.graphics.draw(plrSprite, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+        love.graphics.draw(sprites.Player, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
     end
     
     love.graphics.setColor(1,1,1,1)
     for _, goose in ipairs(greygeese) do
-        love.graphics.draw(enemySprite, math.floor(goose.body:getX()), math.floor(goose.body:getY()), 0, goose.direction, 1, 4, 4)
+        love.graphics.draw(sprites.Enemy, math.floor(goose.body:getX()), math.floor(goose.body:getY()), 0, goose.direction, 1, 4, 4)
     end
     
-    love.graphics.draw(healthbarBaseSprite, 2, 2)
-    love.graphics.draw(healthbarSprite, 2, 2, 0, player.health / 100, 1)
+    love.graphics.draw(sprites.HealthbarBase, 2, 2)
+    love.graphics.draw(sprites.HealthbarBar, 2, 2, 0, player.health / 100, 1)
     
-    love.graphics.draw(breadSprite, virtualWidth - 10, 2)
+    love.graphics.draw(sprites.Bread, virtualWidth - 10, 2)
     numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, virtualWidth, virtualHeight, "righttoleft")
 
     if player.health <= 0 then
@@ -175,8 +201,9 @@ function love.draw()
         love.graphics.setColor(1,0,0,0.5)
         love.graphics.rectangle("fill", 0, 0, virtualWidth, virtualHeight)
         love.graphics.setColor(1,1,1,1)
-
-        love.graphics.draw(gameOverSprite, 0,0)
+        
+        love.graphics.draw(sprites.GameOver, 0,0)
+        love.graphics.draw(sprites.RetryButton, 0, 0) -- 16, 51, 31, 11
     end
     
     -- Rendering virtual resolution

@@ -12,17 +12,35 @@ player.bread = 0
 player.damageEffectTimer = love.timer.getTime()
 player.disableMovement = false
 
+player.__index = player
+
+function player:ResetValues()
+    self.speed = 2
+    self.health = 100
+    self.direction = 1
+    self.bread = 0
+    self.disableMovement = false
+
+    self.body:setX(32)
+    self.body:setY(32)
+end
+
 function player:Init(world)
-    player.body = love.physics.newBody(world, self.x, self.y, "dynamic")
-    player.shape = love.physics.newRectangleShape(4, 4)
-    player.fixture = love.physics.newFixture(self.body, self.shape)
-    player.fixture:setRestitution(0.1)
-    player.fixture:setDensity(10000000)
-    player.fixture:setUserData("player")
+    if self.body ~= nil then
+        self.body:destroy()
+    end
+
+    self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
+    self.shape = love.physics.newRectangleShape(4, 4)
+    self.fixture = love.physics.newFixture(self.body, self.shape)
+    self.fixture:setRestitution(0.1)
+    self.fixture:setDensity(10000000)
+    self.fixture:setUserData("player")
 end
 
 function player:Movement(dt)
     if self.disableMovement then return end
+
     for key, mult in pairs(movementDirections) do
         if love.keyboard.isDown(key) then
             self.body:applyForce(self.speed * mult[1], self.speed * mult[2])
@@ -39,7 +57,7 @@ end
 function player:TakeDamage(damage)
     self.health = self.health - damage
     if self.health <= 0 then self.health = 0 end
-    
+
     self.damageEffectTimer = love.timer.getTime() + 0.1
 end
 
