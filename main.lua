@@ -42,8 +42,21 @@ function love.load()
         end
         
         repeat
-            greygoose.x = math.random(4,60)
-            greygoose.y = math.random(4,60)
+            local side = math.random(1,4)
+            if side == 1 then
+                greygoose.x = -20
+                greygoose.y = math.random(4,60)
+            elseif side == 2 then
+                greygoose.x = virtualWidth + 20
+                greygoose.y = math.random(4,60)
+            elseif side == 3 then
+                greygoose.x = math.random(4,60)
+                greygoose.y = -20
+            elseif side == 4 then
+                greygoose.x = math.random(4,60)
+                greygoose.y = virtualHeight + 20
+            end 
+            
     
         until distance(player.body:getX(), player.body:getY(), greygoose.x, greygoose.y) > 30
          
@@ -66,6 +79,8 @@ function love.load()
         Border.shape = love.physics.newRectangleShape(border[3], border[4])
         Border.fixture = love.physics.newFixture(Border.body, Border.shape)
         Border.fixture:setRestitution(0)
+        Border.fixture:setCategory(5, 5)
+        Border.fixture:setMask(5, 6)
         Border.fixture:setUserData("border"..tostring(index))
     end
 
@@ -89,9 +104,19 @@ function love.update(dt)
     end
     
     if bread == nil then
+        local function distance(x1, y1, x2, y2)
+            local dx = x1 - x2
+            local dy = y1 - y2
+            return math.sqrt(dx * dx + dy * dy)
+        end
+
         bread = require("bread")
-        bread.x = math.random(4, 60)
-        bread.y = math.random(4, 60)
+
+        repeat
+            bread.x = math.random(4, 60)
+            bread.y = math.random(4, 60)
+        until distance(player.body:getX(), player.body:getY(), bread.x, bread.y) > 20
+       
     end
 
     if collision:CheckCollision(

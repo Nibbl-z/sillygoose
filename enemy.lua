@@ -6,7 +6,7 @@ enemy.speed = 13
 enemy.direction = 1
 enemy.damage = 5
 
-local disableFollowTimer = love.timer.getTime() + 2
+disableFollowTimer = love.timer.getTime() + 2
 local damageTimer = love.timer.getTime()
 
 enemy.__index = enemy
@@ -17,6 +17,7 @@ function enemy:Init(world, index)
     self.fixture = love.physics.newFixture(self.body, self.shape)
     self.fixture:setRestitution(0.1)
     self.fixture:setDensity(0)
+    self.fixture:setCategory(6,6)
     self.fixture:setUserData("enemy"..tostring(index))
 end
 
