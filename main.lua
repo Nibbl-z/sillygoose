@@ -5,9 +5,10 @@ local windowScale = 10
 local player = require("player")
 local collision = require("collision")
 local numberRenderer = require("numberrenderer")
+local shop = require("shop")
 
 local greygeese = {}
-local enemies = 5
+local enemies = 0
 
 local bread
 
@@ -22,7 +23,9 @@ local sprites = {
     HealthbarBar = "healthbar_bar.png",
     Bread = "bread.png",
     GameOver = "game_over.png",
-    RetryButton = "retry.png"
+    RetryButton = "retry.png",
+
+    ShopStand = "shop_stand.png"
 }
 
 function Start()
@@ -131,7 +134,7 @@ function love.update(dt)
         end
 
         bread = require("bread")
-
+        
         repeat
             bread.x = math.random(4, 60)
             bread.y = math.random(4, 60)
@@ -164,6 +167,19 @@ function love.update(dt)
             end
         end
     end
+
+    if not shop.spawned then
+        if shop.spawnTimer < love.timer.getTime() then
+            shop:SpawnStand(player)
+        end
+    else
+        if collision:CheckCollision(math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
+        math.floor(shop.x), math.floor(shop.y), 12, 12) then
+            if love.mouse.isDown(1) then
+                shop:Purchase("health", player)
+            end
+        end
+    end
 end
 
 function love.draw()
@@ -176,6 +192,10 @@ function love.draw()
     
     if bread ~= nil then
         love.graphics.draw(sprites.Bread, bread.x, bread.y)
+    end
+    
+    if shop.spawned == true then
+        love.graphics.draw(sprites.ShopStand, shop.x, shop.y)
     end
     
     if player.damageEffectTimer > love.timer.getTime() then

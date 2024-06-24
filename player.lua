@@ -61,4 +61,9 @@ function player:TakeDamage(damage)
     self.damageEffectTimer = love.timer.getTime() + 0.1
 end
 
+function player:Heal(heal)
+    self.health = self.health + heal
+    if self.health > 100 then self.health = 100 end
+end
+
 return player
