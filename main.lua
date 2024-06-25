@@ -19,6 +19,7 @@ local paused = false
 local sprites = {
     Player = "plr.png",
     PlayerHurt = "plr_hurt.png",
+    PlayerForcefield = "plr_forcefield.png",
     Enemy = "greygoose.png",
     Background = "bg.png",
     HealthbarBase = "healthbar_background.png",
@@ -31,7 +32,8 @@ local sprites = {
     ShopStand = "shop_stand.png",
     ShopMenu = "shop.png",
 
-    Tornado = "tornado.png"
+    Tornado = "tornado.png",
+    Forcefield = "forcefield.png"
 }
 
 function Start()
@@ -191,6 +193,10 @@ function love.update(dt)
         player:UseAbility("tornado", greygeese)
     end
 
+    if love.keyboard.isDown("e") then
+        player:UseAbility("forcefield", player)
+    end
+
     if not shop.spawned then
         if shop.spawnTimer < love.timer.getTime() then
             shop:SpawnStand(player)
@@ -239,7 +245,12 @@ function love.draw()
         love.graphics.setColor(1,0,0,1)
         love.graphics.draw(sprites.PlayerHurt, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
     else
-        love.graphics.draw(sprites.Player, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+        if player.forcefielded then
+            love.graphics.draw(sprites.PlayerForcefield, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+        else
+            love.graphics.draw(sprites.Player, math.floor(player.body:getX()), math.floor(player.body:getY()), 0, player.direction, 1, 4, 4)
+        end
+        
     end
     
     love.graphics.setColor(1,1,1,1)
@@ -259,6 +270,9 @@ function love.draw()
 
     love.graphics.draw(sprites.Tornado, 2, virtualHeight - 10)
     numberRenderer:RenderNumber(player:GetPowerup("tornado").Amount, 12, virtualHeight - 10, "lefttoright")
+
+    love.graphics.draw(sprites.Forcefield, 2, virtualHeight - 20)
+    numberRenderer:RenderNumber(player:GetPowerup("forcefield").Amount, 12, virtualHeight - 20, "lefttoright")
     
     
     if player.health <= 0 then

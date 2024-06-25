@@ -13,7 +13,8 @@ player.damageEffectTimer = love.timer.getTime()
 player.disableMovement = false
 
 player.goldenChance = 10
-
+player.forcefielded = false
+player.forcefieldOffTimer = love.timer.getTime()
 player.__index = player
 
 player.powerups = {
@@ -26,6 +27,17 @@ player.powerups = {
             for _, enemy in ipairs(enemies) do
                 enemy:FlingAway(player, 500, 1.5)
             end
+        end
+    },
+
+    {
+        ID = "forcefield",
+        Amount = 123,
+        Cooldown = 0,
+        CooldownAmount = 10,
+        Callback = function(player)
+            player.forcefielded = true
+            player.forcefieldOffTimer = love.timer.getTime() + 5
         end
     }
 }
@@ -56,6 +68,10 @@ function player:Init(world)
 end
 
 function player:Movement(dt)
+    if love.timer.getTime() > self.forcefieldOffTimer then
+        self.forcefielded = false
+    end
+
     if self.disableMovement then return end
 
     for key, mult in pairs(movementDirections) do
@@ -72,9 +88,10 @@ function player:Movement(dt)
 end
 
 function player:TakeDamage(damage)
+    if self.forcefielded then return end
     self.health = self.health - damage
     if self.health <= 0 then self.health = 0 end
-
+    
     self.damageEffectTimer = love.timer.getTime() + 0.1
 end
 

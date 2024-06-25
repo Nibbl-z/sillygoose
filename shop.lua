@@ -24,6 +24,14 @@ shop.shopItems = {
             player:IncreasePowerupAmount("tornado")
         end,
         ButtonTransform = {9, 38, 22, 11}
+    },
+    {
+        ID = "forcefield",
+        Price = 20,
+        Callback = function(player)
+            player:IncreasePowerupAmount("forcefield")
+        end,
+        ButtonTransform = {33, 38, 22, 11}
     }
 }
 
