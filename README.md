@@ -4,8 +4,8 @@ GOOSE SURVIVAL is a game where you avoid the grey geese. Collect bread to purcha
 
 **Controls:**
 
-WASD to move
-E to open shop
-1 to use forcefield powerup
-2 to use tornado powerup
-ESC to pause
+- WASD to move
+- E to open shop
+- 1 to use forcefield powerup
+- 2 to use tornado powerup
+- ESC to pause
