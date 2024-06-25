@@ -136,6 +136,7 @@ function love.load()
     
     love.audio.setEffect("gameover", {type = "equalizer", volume = 0.4, highgain = 0.126, highmidgain = 0.126, lowgain = 3})
     sounds.MenuMusic:play()
+    sounds.MenuMusic:setVolume(0.5)
     sprites.Background:setWrap("repeat", "repeat", "repeat")
 
     local borders = {
@@ -164,15 +165,15 @@ end
 function love.update(dt)
     if started == false then return end
     if startDelay > love.timer.getTime() then return end
-
+    
     player:Movement(dt)
     
     if love.timer.getTime() >= spawnGreyGooseTimer then
         SpawnGreyGoose()
-
+        
         spawnGreyGooseTimer = love.timer.getTime() + math.random(6,15)
     end
-
+    
     for _, goose in ipairs(greygeese) do
         goose:Follow(player.body:getX(), player.body:getY(), dt)
     
@@ -386,7 +387,7 @@ function love.draw()
         love.graphics.draw(sprites.GameOver, 0,0)
         love.graphics.draw(sprites.RetryButton, 0, 0) -- 16, 51, 31, 11
     else
-        sounds.BGMusic:setVolume(0.6)
+        sounds.BGMusic:setVolume(0.4)
         sounds.BGMusic:setEffect("gameover", false)
     end
     

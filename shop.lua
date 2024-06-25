@@ -11,7 +11,7 @@ shop.shopItems = {
     },
     {
         ID = "goldbreadchance",
-        Price = 1,
+        Price = 15,
         Callback = function(player)
             player:IncreaseGoldenChance()
         end,
