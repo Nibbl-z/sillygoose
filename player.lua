@@ -23,7 +23,8 @@ player.powerups = {
         Amount = 0,
         Cooldown = 0,
         CooldownAmount = 7,
-        Callback = function(enemies)
+        Callback = function(enemies, sfx)
+            sfx:play()
             for _, enemy in ipairs(enemies) do
                 enemy:FlingAway(player, 500, 1.5)
             end
@@ -36,6 +37,7 @@ player.powerups = {
         Cooldown = 0,
         CooldownAmount = 10,
         Callback = function(player)
+            sfx:play()
             player.forcefielded = true
             player.forcefieldOffTimer = love.timer.getTime() + 5
         end
@@ -124,7 +126,7 @@ function player:IncreasePowerupAmount(id)
     powerup.Amount = powerup.Amount + 1
 end
 
-function player:UseAbility(id, enemies)
+function player:UseAbility(id, enemies, sfx)
     local powerup = self:GetPowerup(id)
     if powerup == nil then return end
     if powerup.Amount <= 0 then return end
@@ -132,7 +134,7 @@ function player:UseAbility(id, enemies)
     
     powerup.Cooldown = love.timer.getTime() + powerup.CooldownAmount
     powerup.Amount = powerup.Amount - 1
-    powerup.Callback(enemies)
+    powerup.Callback(enemies, sfx)
 end
 
 return player

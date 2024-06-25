@@ -80,12 +80,13 @@ function shop:SpawnStand(player)
     until distance(player.body:getX(), player.body:getY(), self.x, self.y) > 20
 end
 
-function shop:HandleMenu(windowScale, player)
+function shop:HandleMenu(windowScale, player, clickSfx)
     local mouseX, mouseY = love.mouse.getPosition()
 
     for _, shopItem in ipairs(self.shopItems) do
         if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, shopItem.ButtonTransform[1], shopItem.ButtonTransform[2], shopItem.ButtonTransform[3], shopItem.ButtonTransform[4]) then
             if love.mouse.isDown(1) and isMouseReleased then
+                clickSfx:play()
                 isMouseReleased = false
                 self:Purchase(shopItem.ID, player)
             end
@@ -94,6 +95,7 @@ function shop:HandleMenu(windowScale, player)
     
     if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, 21, 50, 22, 6) then
         if love.mouse.isDown(1) then
+            clickSfx:play()
             self.menuOpen = false
             self.spawnTimer = love.timer.getTime() + 20
             self.spawned = false

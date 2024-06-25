@@ -31,9 +31,18 @@ local sprites = {
     
     ShopStand = "shop_stand.png",
     ShopMenu = "shop.png",
-
+    
     Tornado = "tornado.png",
     Forcefield = "forcefield.png"
+}
+
+local sounds = {
+    BGMusic = {"bg_music.mp3", "stream"},
+    Damage = {"hitHurt.wav", "static"},
+    Bread = {"pickupBread.wav", "static"},
+    Tornado = {"pickupBread.wav", "static"},
+    Forcefield = {"pickupBread.wav", "static"},
+    Click = {"click.wav", "static"}
 }
 
 function Start()
@@ -81,7 +90,7 @@ function Start()
         greygoose:Init(world, i)
     end
 
-    bgMusic:stop()
+    sounds.BGMusic:stop()
 end
 
 function love.load()
@@ -92,7 +101,10 @@ function love.load()
     for name, sprite in pairs(sprites) do
         sprites[name] = love.graphics.newImage("/img/"..sprite)
     end
-    
+    for name, sound in pairs(sounds) do
+        sounds[name] = love.audio.newSource("/audio/"..sound[1], sound[2])
+    end
+
     sprites.Background:setWrap("repeat", "repeat", "repeat")
 
     local borders = {
@@ -113,10 +125,9 @@ function love.load()
         Border.fixture:setMask(5, 6)
         Border.fixture:setUserData("border"..tostring(index))
     end
+    
+    
 
-    bgMusic = love.audio.newSource("/audio/bg_music.mp3", "stream")
-    hurtSfx = love.audio.newSource("/audio/hitHurt.wav", "static")
-    breadSfx = love.audio.newSource("/audio/pickupBread.wav", "static")
     player:Init(world)
     Start()
 end
@@ -132,7 +143,7 @@ function love.update(dt)
             math.floor(goose.body:getX()), math.floor(goose.body:getY()), 8, 8
         ) then
             if not paused then
-                goose:Damage(player, hurtSfx)
+                goose:Damage(player, sounds.Damage)
             end
         end
     end
@@ -169,13 +180,13 @@ function love.update(dt)
             end
             
             bread = nil
-            breadSfx:play()
+            sounds.Bread:play()
         end
     
     if not paused then world:update(dt) end
 
-    if not bgMusic:isPlaying() then
-        bgMusic:play()
+    if not sounds.BGMusic:isPlaying() then
+        sounds.BGMusic:play()
     end
     
     if player.health <= 0 then
@@ -190,11 +201,11 @@ function love.update(dt)
     end
     
     if love.keyboard.isDown("1") then
-        player:UseAbility("tornado", greygeese)
+        player:UseAbility("tornado", greygeese, sounds.Tornado)
     end
 
     if love.keyboard.isDown("2") then
-        player:UseAbility("forcefield", player)
+        player:UseAbility("forcefield", player, sounds.Forcefield)
     end
 
     if not shop.spawned then
@@ -214,7 +225,7 @@ function love.update(dt)
     end
     
     if shop.menuOpen then
-        local returnValue = shop:HandleMenu(windowScale, player)
+        local returnValue = shop:HandleMenu(windowScale, player, sounds.Click)
         if returnValue == "closed" then
             paused = false
         end
