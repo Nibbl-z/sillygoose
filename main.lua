@@ -7,6 +7,7 @@ local collision = require("collision")
 local numberRenderer = require("numberrenderer")
 local shop = require("shop")
 local fade = require("fade")
+local pause = require("pause")
 local greygeese = {}
 local enemies = 3
 
@@ -15,6 +16,7 @@ local bread
 local world = love.physics.newWorld(0, 0, true)
 
 local paused = false
+local pauseMenu = false
 
 local started = false
 local startDelay = 0
@@ -44,7 +46,9 @@ local sprites = {
     Forcefield = "forcefield.png",
 
     Menu = "menu.png",
-    PressAnyKey = "pressanykey.png"
+    PressAnyKey = "pressanykey.png",
+
+    Paused = "pause.png"
 }
 
 local sounds = {
@@ -93,6 +97,7 @@ end
 
 function Start()
     paused = false
+    pauseMenu = false
     player:ResetValues()
     
     for _, v in ipairs(greygeese) do
@@ -191,8 +196,8 @@ function love.update(dt)
         bread = require("bread")
         
         repeat
-            bread.x = math.random(4, 60)
-            bread.y = math.random(4, 60)
+            bread.x = math.random(4, 46)
+            bread.y = math.random(4, 46)
         until distance(player.body:getX(), player.body:getY(), bread.x, bread.y) > 20
         
         if math.random(1,10) >= player.goldenChance then
@@ -217,7 +222,21 @@ function love.update(dt)
         end
     
     if not paused then world:update(dt) end
+    if pauseMenu and not shop.menuOpen then
+        local returnval = pause:HandlePause(windowScale)
 
+        if returnval == "resume" then
+            paused = false
+            pauseMenu = false
+        end
+        if returnval == "retry" then
+            Start()
+        end
+        if returnval == "quit" then
+            love.event.quit()
+        end
+    end
+    
     if not sounds.BGMusic:isPlaying() then
         sounds.BGMusic:setVolume(0.6)
         sounds.BGMusic:play()
@@ -274,6 +293,7 @@ function love.keypressed(key, scancode, isRepeat)
     if not isRepeat then
         if scancode == "escape" and not shop.menuOpen then
             paused = not paused
+            pauseMenu = not pauseMenu
         end
     end
     
@@ -383,6 +403,12 @@ function love.draw()
 
     if started == true and love.timer.getTime() <= fadeStopTime then
         fade:Fade()
+    end
+
+    if pauseMenu then
+        sounds.BGMusic:setVolume(0.1)
+        sounds.BGMusic:setEffect("gameover", true)
+        love.graphics.draw(sprites.Paused, 0, 0)
     end
     
     -- Rendering virtual resolution
