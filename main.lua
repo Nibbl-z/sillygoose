@@ -27,9 +27,11 @@ local sprites = {
     GoldenBread = "golden_bread.png",
     GameOver = "game_over.png",
     RetryButton = "retry.png",
-
+    
     ShopStand = "shop_stand.png",
-    ShopMenu = "shop.png"
+    ShopMenu = "shop.png",
+
+    Tornado = "tornado.png"
 }
 
 function Start()
@@ -189,10 +191,6 @@ function love.update(dt)
         player:UseAbility("tornado", greygeese)
     end
 
-    if love.keyboard.isDown("e") then
-        player:IncreasePowerupAmount("tornado")
-    end
-
     if not shop.spawned then
         if shop.spawnTimer < love.timer.getTime() then
             shop:SpawnStand(player)
@@ -257,7 +255,10 @@ function love.draw()
     end
 
     love.graphics.draw(sprites.Bread, virtualWidth - 10, 2)
-    numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, virtualWidth, virtualHeight, "righttoleft")
+    numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, "righttoleft")
+
+    love.graphics.draw(sprites.Tornado, 2, virtualHeight - 10)
+    numberRenderer:RenderNumber(player:GetPowerup("tornado").Amount, 12, virtualHeight - 10, "lefttoright")
     
     
     if player.health <= 0 then

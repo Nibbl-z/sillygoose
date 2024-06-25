@@ -16,6 +16,14 @@ shop.shopItems = {
             player:IncreaseGoldenChance()
         end,
         ButtonTransform = {33, 25, 22, 11}
+    },
+    {
+        ID = "tornado",
+        Price = 20,
+        Callback = function(player)
+            player:IncreasePowerupAmount("tornado")
+        end,
+        ButtonTransform = {9, 38, 22, 11}
     }
 }
 
@@ -24,6 +32,8 @@ shop.spawned = false
 shop.x = 0
 shop.y = 0
 shop.menuOpen = false
+
+local isMouseReleased = true
 
 local collision = require("collision")
 
@@ -67,7 +77,8 @@ function shop:HandleMenu(windowScale, player)
 
     for _, shopItem in ipairs(self.shopItems) do
         if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, shopItem.ButtonTransform[1], shopItem.ButtonTransform[2], shopItem.ButtonTransform[3], shopItem.ButtonTransform[4]) then
-            if love.mouse.isDown(1) then
+            if love.mouse.isDown(1) and isMouseReleased then
+                isMouseReleased = false
                 self:Purchase(shopItem.ID, player)
             end
         end
@@ -80,6 +91,10 @@ function shop:HandleMenu(windowScale, player)
             self.spawned = false
             return "closed"
         end
+    end
+
+    if not love.mouse.isDown(1) then
+        isMouseReleased = true
     end
 end
 

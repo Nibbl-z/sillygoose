@@ -51,6 +51,7 @@ function enemy:Follow(playerX, playerY, dt)
 end
 
 function enemy:FlingAway(player, force, disableFollowTime)
+    self.body:setLinearVelocity(0, 0)
     disableFollowTimer = love.timer.getTime() + disableFollowTime
 
     local forceX = 0

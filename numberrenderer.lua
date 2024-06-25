@@ -13,7 +13,7 @@ local sprites = {
     ["9"] = love.graphics.newImage("/img/numbers/9.png")
 }
 
-function module:RenderNumber(number, x, y, virtualWidth, virtualHeight, direction)
+function module:RenderNumber(number, x, y, direction)
     number = tostring(number)
     
     if direction == "lefttoright" then
