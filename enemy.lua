@@ -50,42 +50,46 @@ function enemy:Follow(playerX, playerY, dt)
     self.body:setLinearVelocity(forceX, forceY)
 end
 
+function enemy:FlingAway(player, force, disableFollowTime)
+    disableFollowTimer = love.timer.getTime() + disableFollowTime
+
+    local forceX = 0
+    local forceY = 0
+    
+    if self.body:getX() < player.body:getX() then
+        forceX = -force
+        
+        self.direction = -1
+    end
+    
+    if self.body:getX() > player.body:getX() then
+        forceX = force
+        
+        self.direction = 1
+    end
+    
+    if self.body:getY() < player.body:getY() then
+        forceY = -force
+    end
+    
+    if self.body:getY() > player.body:getY()  then
+        forceY = force
+    end
+    
+    self.body:applyForce(forceX, forceY)
+end
+
 function enemy:Damage(player, hurtSfx)
     print(damageTimer)
     
     if damageTimer > love.timer.getTime() then return end
     
     damageTimer = love.timer.getTime() + 0.5
-    disableFollowTimer = love.timer.getTime() + 0.8
     
     player:TakeDamage(self.damage)
     hurtSfx:play()
 
-    local forceX = 0
-    local forceY = 0
-    local flingForce = 3
-
-    if self.body:getX() < player.body:getX() then
-        forceX = -flingForce
-
-        self.direction = -1
-    end
-    
-    if self.body:getX() > player.body:getX() then
-        forceX = flingForce
-        
-        self.direction = 1
-    end
-    
-    if self.body:getY() < player.body:getY() then
-        forceY = -flingForce
-    end
-    
-    if self.body:getY() > player.body:getY()  then
-        forceY = flingForce
-    end
-    
-    self.body:applyForce(forceX, forceY)
+    self:FlingAway(player, 3, 0.8)
 end
 
 function enemy:Destroy()

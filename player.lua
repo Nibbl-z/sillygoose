@@ -16,6 +16,20 @@ player.goldenChance = 10
 
 player.__index = player
 
+player.powerups = {
+    {
+        ID = "tornado",
+        Amount = 0,
+        Cooldown = 0,
+        CooldownAmount = 7,
+        Callback = function(enemies)
+            for _, enemy in ipairs(enemies) do
+                enemy:FlingAway(player, 500, 1.5)
+            end
+        end
+    }
+}
+
 function player:ResetValues()
     self.speed = 2
     self.health = 100
@@ -74,6 +88,34 @@ function player:IncreaseGoldenChance(chance)
     if self.goldenChance <= 0 then
         self.goldenChance = 1
     end
+end
+
+function player:GetPowerup(id)
+    for _, powerup in ipairs(self.powerups) do
+        if powerup.ID == id then
+            return powerup
+        end
+    end
+    
+    return nil
+end
+
+function player:IncreasePowerupAmount(id)
+    local powerup = self:GetPowerup(id)
+    if powerup == nil then return end
+    
+    powerup.Amount = powerup.Amount + 1
+end
+
+function player:UseAbility(id, enemies)
+    local powerup = self:GetPowerup(id)
+    if powerup == nil then return end
+    if powerup.Amount <= 0 then return end
+    if powerup.Cooldown > love.timer.getTime() then return end
+    
+    powerup.Cooldown = love.timer.getTime() + powerup.CooldownAmount
+    powerup.Amount = powerup.Amount - 1
+    powerup.Callback(enemies)
 end
 
 return player

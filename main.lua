@@ -169,13 +169,11 @@ function love.update(dt)
         end
     
     if not paused then world:update(dt) end
-    
-    
 
     if not bgMusic:isPlaying() then
         bgMusic:play()
     end
-
+    
     if player.health <= 0 then
         local mouseX, mouseY = love.mouse.getPosition()
 
@@ -185,6 +183,14 @@ function love.update(dt)
                 Start()
             end
         end
+    end
+    
+    if love.keyboard.isDown("q") then
+        player:UseAbility("tornado", greygeese)
+    end
+
+    if love.keyboard.isDown("e") then
+        player:IncreasePowerupAmount("tornado")
     end
 
     if not shop.spawned then
