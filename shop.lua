@@ -11,7 +11,7 @@ shop.shopItems = {
     },
     {
         ID = "goldbreadchance",
-        Price = 15,
+        Price = 1,
         Callback = function(player)
             player:IncreaseGoldenChance()
         end,
@@ -87,6 +87,10 @@ function shop:HandleMenu(windowScale, player, clickSfx)
     for _, shopItem in ipairs(self.shopItems) do
         if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, shopItem.ButtonTransform[1], shopItem.ButtonTransform[2], shopItem.ButtonTransform[3], shopItem.ButtonTransform[4]) then
             if love.mouse.isDown(1) and isMouseReleased then
+                if (shopItem.ID == "goldbreadchance" and player.goldenChance == 1) then
+                    return
+                end
+
                 clickSfx:play()
                 isMouseReleased = false
                 self:Purchase(shopItem.ID, player)

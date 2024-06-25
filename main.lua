@@ -37,6 +37,7 @@ local sprites = {
     
     ShopStand = "shop_stand.png",
     ShopMenu = "shop.png",
+    ShopGoldBreadSold = "goldbread_soldout.png",
     ShopKeybind = "shop_keybind_hover.png",
     
     Tornado = "tornado.png",
@@ -330,6 +331,10 @@ function love.draw()
 
     if shop.menuOpen == true then
         love.graphics.draw(sprites.ShopMenu, 0, 0)
+
+        if player.goldenChance == 1 then
+            love.graphics.draw(sprites.ShopGoldBreadSold, 0, 0)
+        end
     end
     
     love.graphics.draw(sprites.Bread, virtualWidth - 10, 2)
