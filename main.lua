@@ -31,6 +31,7 @@ local sprites = {
     
     ShopStand = "shop_stand.png",
     ShopMenu = "shop.png",
+    ShopKeybind = "shop_keybind_hover.png",
     
     Tornado = "tornado.png",
     Forcefield = "forcefield.png"
@@ -40,8 +41,8 @@ local sounds = {
     BGMusic = {"bg_music.mp3", "stream"},
     Damage = {"hitHurt.wav", "static"},
     Bread = {"pickupBread.wav", "static"},
-    Tornado = {"pickupBread.wav", "static"},
-    Forcefield = {"pickupBread.wav", "static"},
+    Tornado = {"tornado.wav", "static"},
+    Forcefield = {"forcefield.wav", "static"},
     Click = {"click.wav", "static"}
 }
 
@@ -200,11 +201,11 @@ function love.update(dt)
         end
     end
     
-    if love.keyboard.isDown("1") then
+    if love.keyboard.isDown("2") then
         player:UseAbility("tornado", greygeese, sounds.Tornado)
     end
 
-    if love.keyboard.isDown("2") then
+    if love.keyboard.isDown("1") then
         player:UseAbility("forcefield", player, sounds.Forcefield)
     end
 
@@ -215,12 +216,15 @@ function love.update(dt)
     else
         if collision:CheckCollision(math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
         math.floor(shop.x), math.floor(shop.y), 12, 12) then
+            shop.canOpen = true
             if love.keyboard.isDown("e") then
                 if shop.menuOpen == false then
                     shop:OpenMenu()
                     paused = true
                 end
             end
+        else
+            shop.canOpen = false
         end
     end
     
@@ -258,6 +262,10 @@ function love.draw()
     
     if shop.spawned == true then
         love.graphics.draw(sprites.ShopStand, shop.x, shop.y)
+        
+        if shop.canOpen then
+            love.graphics.draw(sprites.ShopKeybind, shop.x, shop.y)
+        end
     end
     
     if player.damageEffectTimer > love.timer.getTime() then

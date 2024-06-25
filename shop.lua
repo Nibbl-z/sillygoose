@@ -40,6 +40,7 @@ shop.spawned = false
 shop.x = 0
 shop.y = 0
 shop.menuOpen = false
+shop.canOpen = false
 
 local isMouseReleased = true
 

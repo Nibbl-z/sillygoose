@@ -36,7 +36,7 @@ player.powerups = {
         Amount = 0,
         Cooldown = 0,
         CooldownAmount = 10,
-        Callback = function(player)
+        Callback = function(player, sfx)
             sfx:play()
             player.forcefielded = true
             player.forcefieldOffTimer = love.timer.getTime() + 5
