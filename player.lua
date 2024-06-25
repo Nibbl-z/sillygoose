@@ -26,7 +26,7 @@ player.powerups = {
         Callback = function(enemies, sfx)
             sfx:play()
             for _, enemy in ipairs(enemies) do
-                enemy:FlingAway(player, 500, 1.5)
+                enemy:FlingAway(player, 50, 3)
             end
         end
     },

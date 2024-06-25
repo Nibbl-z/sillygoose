@@ -20,6 +20,8 @@ local started = false
 local startDelay = 0
 local fadeStopTime = 0
 
+local spawnGreyGooseTimer
+
 local sprites = {
     Player = "plr.png",
     PlayerHurt = "plr_hurt.png",
@@ -53,6 +55,40 @@ local sounds = {
     Click = {"click.wav", "static"}
 }
 
+function SpawnGreyGoose()
+    local greygoose = setmetatable({}, require("enemy"))
+    table.insert(greygeese, greygoose)
+    
+    local function distance(x1, y1, x2, y2)
+        local dx = x1 - x2
+        local dy = y1 - y2
+        return math.sqrt(dx * dx + dy * dy)
+    end
+    
+    repeat
+        local side = math.random(1,4)
+        if side == 1 then
+            greygoose.x = -20
+            greygoose.y = math.random(4,60)
+        elseif side == 2 then
+            greygoose.x = virtualWidth + 20
+            greygoose.y = math.random(4,60)
+        elseif side == 3 then
+            greygoose.x = math.random(4,60)
+            greygoose.y = -20
+        elseif side == 4 then
+            greygoose.x = math.random(4,60)
+            greygoose.y = virtualHeight + 20
+        end 
+        
+
+    until distance(player.body:getX(), player.body:getY(), greygoose.x, greygoose.y) > 30
+     
+    
+    greygoose.speed = math.random(1000, 1600) / 100
+    greygoose:Init(world, 1)
+end
+
 function Start()
     paused = false
     player:ResetValues()
@@ -65,40 +101,12 @@ function Start()
     greygeese = {}
     
     for i = 1, enemies do
-        local greygoose = setmetatable({}, require("enemy"))
-        table.insert(greygeese, greygoose)
-        
-        local function distance(x1, y1, x2, y2)
-            local dx = x1 - x2
-            local dy = y1 - y2
-            return math.sqrt(dx * dx + dy * dy)
-        end
-        
-        repeat
-            local side = math.random(1,4)
-            if side == 1 then
-                greygoose.x = -20
-                greygoose.y = math.random(4,60)
-            elseif side == 2 then
-                greygoose.x = virtualWidth + 20
-                greygoose.y = math.random(4,60)
-            elseif side == 3 then
-                greygoose.x = math.random(4,60)
-                greygoose.y = -20
-            elseif side == 4 then
-                greygoose.x = math.random(4,60)
-                greygoose.y = virtualHeight + 20
-            end 
-            
-    
-        until distance(player.body:getX(), player.body:getY(), greygoose.x, greygoose.y) > 30
-         
-        
-        greygoose.speed = math.random(1000, 1600) / 100
-        greygoose:Init(world, i)
+        SpawnGreyGoose()
     end
     
+    shop.spawned = false
     shop.spawnTimer = love.timer.getTime() + 20
+    spawnGreyGooseTimer = love.timer.getTime() + math.random(6,15)
     sounds.BGMusic:stop()
 end
 
@@ -134,8 +142,6 @@ function love.load()
         Border.fixture:setMask(5, 6)
         Border.fixture:setUserData("border"..tostring(index))
     end
-    
-    
 
     player:Init(world)
     Start()
@@ -146,6 +152,12 @@ function love.update(dt)
     if startDelay > love.timer.getTime() then return end
 
     player:Movement(dt)
+    
+    if love.timer.getTime() >= spawnGreyGooseTimer then
+        SpawnGreyGoose()
+
+        spawnGreyGooseTimer = love.timer.getTime() + math.random(6,15)
+    end
 
     for _, goose in ipairs(greygeese) do
         goose:Follow(player.body:getX(), player.body:getY(), dt)
