@@ -32,7 +32,7 @@ player.powerups = {
 
     {
         ID = "forcefield",
-        Amount = 123,
+        Amount = 0,
         Cooldown = 0,
         CooldownAmount = 10,
         Callback = function(player)

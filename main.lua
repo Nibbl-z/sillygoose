@@ -189,11 +189,11 @@ function love.update(dt)
         end
     end
     
-    if love.keyboard.isDown("q") then
+    if love.keyboard.isDown("1") then
         player:UseAbility("tornado", greygeese)
     end
 
-    if love.keyboard.isDown("e") then
+    if love.keyboard.isDown("2") then
         player:UseAbility("forcefield", player)
     end
 
@@ -204,7 +204,7 @@ function love.update(dt)
     else
         if collision:CheckCollision(math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
         math.floor(shop.x), math.floor(shop.y), 12, 12) then
-            if love.mouse.isDown(1) then
+            if love.keyboard.isDown("e") then
                 if shop.menuOpen == false then
                     shop:OpenMenu()
                     paused = true
@@ -217,6 +217,14 @@ function love.update(dt)
         local returnValue = shop:HandleMenu(windowScale, player)
         if returnValue == "closed" then
             paused = false
+        end
+    end
+end
+
+function love.keypressed(key, scancode, isRepeat)
+    if not isRepeat then
+        if scancode == "escape" and not shop.menuOpen then
+            paused = not paused
         end
     end
 end
@@ -260,20 +268,27 @@ function love.draw()
     
     love.graphics.draw(sprites.HealthbarBase, 2, 2)
     love.graphics.draw(sprites.HealthbarBar, 2, 2, 0, player.health / 100, 1)
-    
+
     if shop.menuOpen == true then
         love.graphics.draw(sprites.ShopMenu, 0, 0)
     end
-
+    
     love.graphics.draw(sprites.Bread, virtualWidth - 10, 2)
     numberRenderer:RenderNumber(player.bread, virtualWidth - 20, 2, "righttoleft")
-
-    love.graphics.draw(sprites.Tornado, 2, virtualHeight - 10)
-    numberRenderer:RenderNumber(player:GetPowerup("tornado").Amount, 12, virtualHeight - 10, "lefttoright")
-
-    love.graphics.draw(sprites.Forcefield, 2, virtualHeight - 20)
-    numberRenderer:RenderNumber(player:GetPowerup("forcefield").Amount, 12, virtualHeight - 20, "lefttoright")
     
+    if player:GetPowerup("tornado").Cooldown > love.timer.getTime() then
+        love.graphics.setColor(0.5,0.5,0.5,1)
+    end
+    love.graphics.draw(sprites.Tornado, 2, virtualHeight - 10)
+    love.graphics.setColor(1,1,1,1)
+    numberRenderer:RenderNumber(player:GetPowerup("tornado").Amount, 12, virtualHeight - 10, "lefttoright")
+    if player:GetPowerup("forcefield").Cooldown > love.timer.getTime() then
+        love.graphics.setColor(0.5,0.5,0.5,1)
+    end
+    love.graphics.draw(sprites.Forcefield, 2, virtualHeight - 20)
+    love.graphics.setColor(1,1,1,1)
+    numberRenderer:RenderNumber(player:GetPowerup("forcefield").Amount, 12, virtualHeight - 20, "lefttoright")
+    love.graphics.setColor(1,1,1,1)
     
     if player.health <= 0 then
         player.disableMovement = true
