@@ -8,6 +8,14 @@ shop.shopItems = {
             player:Heal(25)
         end,
         ButtonTransform = {9, 25, 22, 11}
+    },
+    {
+        ID = "goldbreadchance",
+        Price = 15,
+        Callback = function(player)
+            player:IncreaseGoldenChance()
+        end,
+        ButtonTransform = {33, 25, 22, 11}
     }
 }
 
@@ -29,10 +37,10 @@ function shop:GetShopItem(id)
     return nil
 end
 
-function shop:Purchase(id, player)
+function shop:Purchase(id, player, bread)
     local shopItem = self:GetShopItem(id)
     if shopItem == nil then return end
-
+    
     if player.bread >= shopItem.Price then
         player.bread = player.bread - shopItem.Price
         shopItem.Callback(player)

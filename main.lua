@@ -24,6 +24,7 @@ local sprites = {
     HealthbarBase = "healthbar_background.png",
     HealthbarBar = "healthbar_bar.png",
     Bread = "bread.png",
+    GoldenBread = "golden_bread.png",
     GameOver = "game_over.png",
     RetryButton = "retry.png",
 
@@ -145,14 +146,24 @@ function love.update(dt)
             bread.x = math.random(4, 60)
             bread.y = math.random(4, 60)
         until distance(player.body:getX(), player.body:getY(), bread.x, bread.y) > 20
-       
+        
+        if math.random(1,10) >= player.goldenChance then
+            bread.golden = true
+        else
+            bread.golden = false
+        end
     end
 
     if collision:CheckCollision(
             math.floor(player.body:getX()), math.floor(player.body:getY()), 8, 8,
             math.floor(bread.x), math.floor(bread.y), 12, 12
         ) then
-            player.bread = player.bread + 1
+            if bread.golden == true then
+                player.bread = player.bread + 5
+            else
+                player.bread = player.bread + 1
+            end
+            
             bread = nil
             breadSfx:play()
         end
@@ -209,7 +220,11 @@ function love.draw()
     love.graphics.draw(sprites.Background, 0,0,0,1,1)
     
     if bread ~= nil then
-        love.graphics.draw(sprites.Bread, bread.x, bread.y)
+        if bread.golden == true then
+            love.graphics.draw(sprites.GoldenBread, bread.x, bread.y)
+        else
+            love.graphics.draw(sprites.Bread, bread.x, bread.y)
+        end
     end
     
     if shop.spawned == true then

@@ -12,6 +12,8 @@ player.bread = 0
 player.damageEffectTimer = love.timer.getTime()
 player.disableMovement = false
 
+player.goldenChance = 10
+
 player.__index = player
 
 function player:ResetValues()
@@ -20,6 +22,7 @@ function player:ResetValues()
     self.direction = 1
     self.bread = 0
     self.disableMovement = false
+    self.goldenChance = 10
 
     self.body:setX(32)
     self.body:setY(32)
@@ -64,6 +67,13 @@ end
 function player:Heal(heal)
     self.health = self.health + heal
     if self.health > 100 then self.health = 100 end
+end
+
+function player:IncreaseGoldenChance(chance)
+    self.goldenChance = self.goldenChance - 1
+    if self.goldenChance <= 0 then
+        self.goldenChance = 1
+    end
 end
 
 return player
