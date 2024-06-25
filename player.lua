@@ -123,7 +123,7 @@ function player:IncreasePowerupAmount(id)
     local powerup = self:GetPowerup(id)
     if powerup == nil then return end
     
-    powerup.Amount = powerup.Amount + 1
+    powerup.Amount = powerup.Amount + 3
 end
 
 function player:UseAbility(id, enemies, sfx)

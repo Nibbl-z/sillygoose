@@ -35,7 +35,7 @@ shop.shopItems = {
     }
 }
 
-shop.spawnTimer = love.timer.getTime() + 10
+shop.spawnTimer = love.timer.getTime() + 20
 shop.spawned = false
 shop.x = 0
 shop.y = 0

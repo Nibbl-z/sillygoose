@@ -6,7 +6,7 @@ local player = require("player")
 local collision = require("collision")
 local numberRenderer = require("numberrenderer")
 local shop = require("shop")
-
+local fade = require("fade")
 local greygeese = {}
 local enemies = 3
 
@@ -15,6 +15,10 @@ local bread
 local world = love.physics.newWorld(0, 0, true)
 
 local paused = false
+
+local started = false
+local startDelay = 0
+local fadeStopTime = 0
 
 local sprites = {
     Player = "plr.png",
@@ -34,7 +38,10 @@ local sprites = {
     ShopKeybind = "shop_keybind_hover.png",
     
     Tornado = "tornado.png",
-    Forcefield = "forcefield.png"
+    Forcefield = "forcefield.png",
+
+    Menu = "menu.png",
+    PressAnyKey = "pressanykey.png"
 }
 
 local sounds = {
@@ -90,7 +97,8 @@ function Start()
         greygoose.speed = math.random(1000, 1600) / 100
         greygoose:Init(world, i)
     end
-
+    
+    shop.spawnTimer = love.timer.getTime() + 20
     sounds.BGMusic:stop()
 end
 
@@ -134,6 +142,9 @@ function love.load()
 end
 
 function love.update(dt)
+    if started == false then return end
+    if startDelay > love.timer.getTime() then return end
+
     player:Movement(dt)
 
     for _, goose in ipairs(greygeese) do
@@ -236,11 +247,19 @@ function love.update(dt)
     end
 end
 
+
 function love.keypressed(key, scancode, isRepeat)
     if not isRepeat then
         if scancode == "escape" and not shop.menuOpen then
             paused = not paused
         end
+    end
+    
+    if started == false then
+        fade:SetTimes()
+        startDelay = love.timer.getTime() + 1
+        started = true
+        fadeStopTime = love.timer.getTime() + 2
     end
 end
 
@@ -317,6 +336,15 @@ function love.draw()
         
         love.graphics.draw(sprites.GameOver, 0,0)
         love.graphics.draw(sprites.RetryButton, 0, 0) -- 16, 51, 31, 11
+    end
+    
+    if started == false or startDelay > love.timer.getTime() then
+        love.graphics.draw(sprites.Menu, 0, 0)
+        love.graphics.draw(sprites.PressAnyKey, 0, 0)
+    end
+
+    if started == true and love.timer.getTime() <= fadeStopTime then
+        fade:Fade()
     end
     
     -- Rendering virtual resolution
