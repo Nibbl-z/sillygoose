@@ -26,7 +26,7 @@ player.powerups = {
         Callback = function(enemies, sfx)
             sfx:play()
             for _, enemy in ipairs(enemies) do
-                enemy:FlingAway(player, 50, 3)
+                enemy:FlingAway(player, 75, 3)
             end
         end
     },
@@ -51,6 +51,12 @@ function player:ResetValues()
     self.bread = 0
     self.disableMovement = false
     self.goldenChance = 10
+    self.forcefielded = false
+
+    for _, powerup in ipairs(self.powerups) do
+        powerup.Amount = 0
+        powerup.Cooldown = 0
+    end
 
     self.body:setX(32)
     self.body:setY(32)

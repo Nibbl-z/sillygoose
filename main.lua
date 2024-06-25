@@ -48,6 +48,7 @@ local sprites = {
 
 local sounds = {
     BGMusic = {"bg_music.mp3", "stream"},
+    MenuMusic = {"menu_music.mp3", "stream"},
     Damage = {"hitHurt.wav", "static"},
     Bread = {"pickupBread.wav", "static"},
     Tornado = {"tornado.wav", "static"},
@@ -111,9 +112,14 @@ function Start()
 end
 
 function love.load()
+   
+
     math.randomseed(os.time())
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.window.setMode(virtualWidth * windowScale, virtualHeight * windowScale)
+    
+    love.window.setTitle("GOOSE SURVIVAL")
+    love.window.setIcon(love.image.newImageData("/img/icon.png"))
     
     for name, sprite in pairs(sprites) do
         sprites[name] = love.graphics.newImage("/img/"..sprite)
@@ -121,7 +127,9 @@ function love.load()
     for name, sound in pairs(sounds) do
         sounds[name] = love.audio.newSource("/audio/"..sound[1], sound[2])
     end
-
+    
+    love.audio.setEffect("gameover", {type = "equalizer", volume = 0.4, highgain = 0.126, highmidgain = 0.126, lowgain = 3})
+    sounds.MenuMusic:play()
     sprites.Background:setWrap("repeat", "repeat", "repeat")
 
     local borders = {
@@ -210,12 +218,13 @@ function love.update(dt)
     if not paused then world:update(dt) end
 
     if not sounds.BGMusic:isPlaying() then
+        sounds.BGMusic:setVolume(0.6)
         sounds.BGMusic:play()
     end
     
     if player.health <= 0 then
         local mouseX, mouseY = love.mouse.getPosition()
-
+        
         if collision:CheckCollision(mouseX / windowScale, mouseY / windowScale, 1, 1, 16, 51, 31, 11) then
             if love.mouse.isDown(1) then
                 print("retry")
@@ -341,6 +350,9 @@ function love.draw()
     love.graphics.setColor(1,1,1,1)
     
     if player.health <= 0 then
+        sounds.BGMusic:setVolume(0.2)
+        sounds.BGMusic:setEffect("gameover", true)
+        
         player.disableMovement = true
         love.graphics.setColor(1,0,0,0.5)
         love.graphics.rectangle("fill", 0, 0, virtualWidth, virtualHeight)
@@ -348,11 +360,20 @@ function love.draw()
         
         love.graphics.draw(sprites.GameOver, 0,0)
         love.graphics.draw(sprites.RetryButton, 0, 0) -- 16, 51, 31, 11
+    else
+        sounds.BGMusic:setVolume(0.6)
+        sounds.BGMusic:setEffect("gameover", false)
     end
     
     if started == false or startDelay > love.timer.getTime() then
         love.graphics.draw(sprites.Menu, 0, 0)
         love.graphics.draw(sprites.PressAnyKey, 0, 0)
+
+        if sounds.MenuMusic:isPlaying() == false then
+            sounds.MenuMusic:play()
+        end
+    else
+        sounds.MenuMusic:stop()
     end
 
     if started == true and love.timer.getTime() <= fadeStopTime then
